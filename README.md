@@ -1,5 +1,7 @@
 ##lua-cityhash##
 
+[![Build Status](https://travis-ci.org/csfrancis/lua-cityhash.png?branch=master)](https://travis-ci.org/csfrancis/lua-cityhash)
+
 A [cityhash](https://code.google.com/p/cityhash/) module for Lua.
 
 ### Installation ###
