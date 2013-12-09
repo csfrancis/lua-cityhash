@@ -22,8 +22,15 @@ static char * create_hex_result(char *src, size_t len, char *result) {
 static int l_hash64(lua_State *L) {
   char buf[32] = { 0 };
   size_t len;
+  uint64 result;
   const char *key = luaL_checklstring(L, 1, &len);
-  uint64 result = CityHash64WithSeed(key, luaL_optinteger(L, 2, len), (uint64) luaL_optnumber(L, 4, 0));
+
+  if (lua_type(L, 4) == LUA_TNONE) {
+    result = CityHash64(key, luaL_optinteger(L, 2, len));
+  } else {
+    result = CityHash64WithSeed(key, luaL_optinteger(L, 2, len), (uint64) luaL_optnumber(L, 4, 0));
+  }
+
   if (lua_toboolean(L, 3)) {
     lua_pushlstring(L, create_hex_result((char *) &result, sizeof(result), buf), sizeof(uint64) * 2);
   } else {
@@ -35,9 +42,16 @@ static int l_hash64(lua_State *L) {
 static int l_hash128(lua_State *L) {
   char buf[64] = { 0 };
   size_t len;
+  uint128 result;
   const char *key = luaL_checklstring(L, 1, &len);
-  uint128 seed = uint128(luaL_optnumber(L, 4, 0), luaL_optnumber(L, 5, 0));
-  uint128 result = CityHash128WithSeed(key, luaL_optinteger(L, 2, len), seed);
+
+  if (lua_type(L, 4) == LUA_TNONE) {
+    result = CityHash128(key, luaL_optinteger(L, 2, len));
+  } else {
+    uint128 seed = uint128(luaL_optnumber(L, 4, 0), luaL_optnumber(L, 5, 0));
+    result = CityHash128WithSeed(key, luaL_optinteger(L, 2, len), seed);
+  }
+
   if (lua_toboolean(L, 3)) {
     uint64 part = Uint128High64(result);
     create_hex_result((char *) &part, sizeof(part), buf);
